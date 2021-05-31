@@ -35,9 +35,6 @@ class Solution:
 		except:
 			print(f'ERROR: No problem exists with code {self.problem}')
 
-	def __repr__(self):
-		return f'{self.problem}: {self.id_}'
-
 
 def keep_newest(solutions):
 	# Make sure earlier submissions come earlier in the list
