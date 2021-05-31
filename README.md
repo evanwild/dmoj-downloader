@@ -1,19 +1,19 @@
 # DMOJ Downloader
 
-### What is this for?
+## What is this for?
 
-DMOJ.ca allows you to download the code for all your solutions, but the file names are just numbers. This script renames your solution files to the names of the problems, and groups them into folders by category.
+DMOJ lets you download the code for all your solutions, however the files are just named as numbers. This tool renames your files to the problem names, and groups them into folders.
 
 ## Want to use this project?
 
 1. Download your submissions from DMOJ
-	- Go to https://dmoj.ca/data/prepare/
-	- Check *"Download submissions?"*, and make sure to filter by AC
-	- Click *"Prepare new download"*, then *"Download data"*
+	1. Go to https://dmoj.ca/data/prepare/
+	2. Check "Download submissions" and make sure to filter by AC
+	3. Click "Prepare new download", then "Download data"
 
 2. Setup this project on your computer
-	- Download/Fork/Clone
-	- 
+	1. Clone with `$ git clone https://github.com/evanwild/dmoj-downloader.git`
+	2. Setup a virtual environment (Commands differ by operating system)
 		```sh
 		$ cd dmoj-downloader
 		$ python -m venv env
@@ -21,8 +21,7 @@ DMOJ.ca allows you to download the code for all your solutions, but the file nam
 		(env)$ pip install -r requirements.txt
 		```
 
-3. Run download.py (Including the directory of the submissions folder)
-	- i.e.
-		```sh
-		(env)$ python downloader.py C:\Users\Evan\Downloads\submissions
-		```
+3. Run download.py (You must specify the path to your submissions folder)
+	```sh
+	(env)$ python downloader.py C:\Users\Evan\Downloads\submissions
+	```

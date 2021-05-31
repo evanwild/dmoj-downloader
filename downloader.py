@@ -35,18 +35,18 @@ class Solution:
 		except:
 			print(f'ERROR: No problem exists with code {self.problem}')
 
+	def __repr__(self):
+		return f'{self.problem}: {self.id_}'
+
 
 def keep_newest(solutions):
-	result = []
-	seen = set()
+	# Make sure earlier submissions come earlier in the list
 	solutions = sorted(solutions, key=lambda solution: solution.id_)
 
-	for solution in reversed(solutions):
-		if solution.problem not in seen:
-			result.append(solution)
-			seen.add(solution.problem)
+	# Only keep the last solution for each problem
+	solutions = {solution.problem: solution for solution in solutions}.values()
 
-	return result
+	return solutions
 
 
 def main():
@@ -70,7 +70,7 @@ def main():
 		
 	if not os.path.isdir('result'):
 		os.mkdir('result')
-		print('INFO: Created results folder')
+		print('INFO: Created result folder')
 
 	solutions = []
 	for filename in filenames:
