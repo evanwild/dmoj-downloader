@@ -21,7 +21,6 @@ class Solution:
 		self.problem = problem
 
 	def process(self):
-
 		try:
 			url = f'https://dmoj.ca/api/problem/info/{self.problem}'
 			data = requests.get(url).json()
@@ -33,7 +32,6 @@ class Solution:
 				print(f'INFO: Created {group} folder')
 
 			shutil.copyfile(self.filepath, f'{group}/{name}.{self.extension}')
-
 		except:
 			print(f'ERROR: No problem exists with code {self.problem}')
 
@@ -52,7 +50,6 @@ def keep_newest(solutions):
 
 
 def main():
-
 	if len(sys.argv) != 2:
 		sys.exit('ERROR: Please specify the directory to your solutions')
 
