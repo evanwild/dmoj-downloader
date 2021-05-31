@@ -20,3 +20,9 @@ DMOJ.ca allows you to download the code for all your solutions, but the file nam
 		$ env\Scripts\Activate
 		(env)$ pip install -r requirements.txt
 		```
+
+3. Run download.py (Including the directory of the submissions folder)
+	- i.e.
+		```sh
+		(env)$ python downloader.py C:\Users\Evan\Downloads\submissions
+		```
