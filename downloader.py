@@ -21,10 +21,10 @@ solution_dir = ''
 
 
 def get_problem_data(problem):
-    url = f'https://dmoj.ca/api/v2/problem/{problem}'
-    r = requests.get(url)
-    data = r.json()['data']['object']
-    return data
+	url = f'https://dmoj.ca/api/v2/problem/{problem}'
+	r = requests.get(url)
+	data = r.json()['data']['object']
+	return data
 
 
 def make_category_path(category):
