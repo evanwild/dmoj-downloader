@@ -13,6 +13,11 @@ API_CALLS_PER_MIN = 85
 # Some characters are not allowed in file names so they will be ignored
 EXCLUDE_CHARS = '\\/:*?"<>|'
 
+# Prefixes for outputting colour to the console
+ERROR_PREFIX = '\033[1;41m ERROR \033[1;m'
+INFO_PREFIX = '\033[1;44m INFO \033[1;m'
+DONE_PREFIX = '\033[1;42m DONE \033[1;m'
+
 
 @dataclass
 class Solution:
@@ -22,11 +27,10 @@ class Solution:
 	problem: str
 
 	def process(self) -> None:
-		url = f'https://dmoj.ca/api/problem/info/{self.problem}'
-		r = requests.get(url)
+		r = requests.get(f'https://dmoj.ca/api/problem/info/{self.problem}')
 
 		if not r.ok:
-			print(f'ERROR: No problem exists with code {self.problem}')
+			print(f'{ERROR_PREFIX} No problem exists with code {self.problem}')
 			return
 
 		data = r.json()
@@ -35,7 +39,7 @@ class Solution:
 
 		if not os.path.isdir(group):
 			os.mkdir(group)
-			print(f'INFO: Created {group} folder')
+			print(f'{INFO_PREFIX} Created {group} folder')
 
 		shutil.copyfile(self.filepath, f'{group}/{name}.{self.extension}')
 
@@ -51,18 +55,22 @@ def keep_newest(solutions: list) -> list:
 
 
 def main() -> None:
+
+	# This line makes color escape sequences magically work in cmd/powershell
+	os.system('color')
+
 	if len(sys.argv) != 2:
-		sys.exit('ERROR: Please specify the directory to your solutions')
+		sys.exit(f'{ERROR_PREFIX} Please specify the directory to your solutions')
 
 	old_dir = sys.argv[1]
 
 	if not os.path.isdir(old_dir):
-		sys.exit('ERROR: That directory does not exist')
+		sys.exit(f'{ERROR_PREFIX} That directory does not exist')
 
 	filenames = os.listdir(old_dir)
 
 	if not os.path.isfile(f'{old_dir}/info.json'):
-		sys.exit('ERROR: The info.json file does not exist in that directory')
+		sys.exit(f'{ERROR_PREFIX} The info.json file does not exist in that directory')
 
 	filenames.remove('info.json')
 	info_file = open(f'{old_dir}/info.json')
@@ -71,7 +79,7 @@ def main() -> None:
 		
 	if not os.path.isdir('result'):
 		os.mkdir('result')
-		print('INFO: Created result folder')
+		print(f'{INFO_PREFIX} Created result folder')
 
 	solutions = []
 	for filename in filenames:
@@ -86,7 +94,7 @@ def main() -> None:
 	for solution in solutions:
 		solution.process()
 		done += 1
-		print(f'INFO: Finished {solution.problem} - {done}/{len(solutions)}')
+		print(f'{DONE_PREFIX} {solution.problem} - {done}/{len(solutions)}')
 		time.sleep(60 / API_CALLS_PER_MIN)
 
 
