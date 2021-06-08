@@ -11,7 +11,7 @@ import time
 API_CALLS_PER_MIN = 85
 
 # Some characters are not allowed in file names so they will be ignored
-EXCLUDE_CHARS = '\\/:*?"<>|'
+FILENAME_EXCLUDE = '\\/:*?"<>|'
 
 # Prefixes for outputting colour to the console
 ERROR_PREFIX = '\033[1;41m ERROR \033[1;m'
@@ -30,64 +30,65 @@ class Solution:
 		r = requests.get(f'https://dmoj.ca/api/problem/info/{self.problem}')
 
 		if not r.ok:
-			print(f'{ERROR_PREFIX} No problem exists with code {self.problem}')
+			print(f'{ERROR_PREFIX} No problem exists named {self.problem}')
 			return
 
 		data = r.json()
-		name = ''.join(c for c in data['name'] if c not in EXCLUDE_CHARS)
+		name = ''.join(c for c in data['name'] if c not in FILENAME_EXCLUDE)
 		group = f'result/{data["group"]}'
 
-		if not os.path.isdir(group):
+		try:
 			os.mkdir(group)
 			print(f'{INFO_PREFIX} Created {group} folder')
+		except FileExistsError:
+			pass
 
 		shutil.copyfile(self.filepath, f'{group}/{name}.{self.extension}')
 
 
 def keep_newest(solutions: list) -> list:
-	# Make sure earlier submissions come earlier in the list
-	solutions = sorted(solutions, key=lambda solution: int(solution.id_))
-
-	# Only keep the last solution for each problem
+	solutions.sort(key=lambda solution: int(solution.id_)) # Sort old to new
 	unique = {solution.problem: solution for solution in solutions}
 
 	return list(unique.values())
 
 
 def main() -> None:
+	os.system('color') # Makes colors work in cmd/powershell
 
-	# This line makes color escape sequences magically work in cmd/powershell
-	os.system('color')
+	old_dir = ''
+	try:
+		old_dir = sys.argv[1]
+	except IndexError:
+		sys.exit(f'{ERROR_PREFIX} Please specify the solution directory')
 
-	if len(sys.argv) != 2:
-		sys.exit(f'{ERROR_PREFIX} Please specify the directory to your solutions')
-
-	old_dir = sys.argv[1]
-
-	if not os.path.isdir(old_dir):
+	files = []
+	try:
+		files = os.listdir(old_dir)
+	except FileNotFoundError:
 		sys.exit(f'{ERROR_PREFIX} That directory does not exist')
 
-	filenames = os.listdir(old_dir)
+	info = {}
+	try:
+		with open(f'{old_dir}/info.json') as info_file:
+			info = json.load(info_file)
+	except FileNotFoundError:
+		sys.exit(f'{ERROR_PREFIX} That directory does not have an info.json')
 
-	if not os.path.isfile(f'{old_dir}/info.json'):
-		sys.exit(f'{ERROR_PREFIX} The info.json file does not exist in that directory')
-
-	filenames.remove('info.json')
-	info_file = open(f'{old_dir}/info.json')
-	info = json.load(info_file)
-	info_file.close()
-		
-	if not os.path.isdir('result'):
+	try:
 		os.mkdir('result')
 		print(f'{INFO_PREFIX} Created result folder')
+	except FileExistsError:
+		pass
 
 	solutions = []
-	for filename in filenames:
-		filepath = f'{old_dir}/{filename}'
-		id_, extension = filename.split('.')
-		problem = info[id_]['problem']
-		solutions.append(Solution(filepath, id_, extension, problem))
-
+	for file in files:
+		if file != 'info.json':
+			filepath = f'{old_dir}/{file}'
+			id_, extension = file.split('.')
+			problem = info[id_]['problem']
+			solutions.append(Solution(filepath, id_, extension, problem))
+	
 	solutions = keep_newest(solutions)
 
 	done = 0
